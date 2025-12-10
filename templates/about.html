@@ -1,0 +1,754 @@
+{% extends "base.html" %}
+{% block title %}About - Hand Controlled Ball Catcher{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Rosarivo:ital,wght@0,400;0,700;1,400&display=swap');
+
+    :root {
+        --neon-blue: #0ff;
+        --neon-pink: #ff0080;
+        --neon-green: #00ff6a;
+        --neon-purple: #b300ff;
+        --neon-orange: #ff6a00;
+        --neon-yellow: #ffdd00;
+        --dark-bg: #0a0a16;
+        --darker-bg: #050510;
+        --card-bg: rgba(15, 15, 35, 0.85);
+        --card-border: rgba(255, 255, 255, 0.15);
+    }
+
+    body {
+        font-family: 'Rosarivo', serif;
+        background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
+
+    /* ANIMATED BACKGROUND */
+    .animated-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    
+    .bg-particle {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
+        opacity: 0.1;
+        animation: float 20s infinite linear;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(0) translateX(0) rotate(0deg);
+        }
+        25% {
+            transform: translateY(-30px) translateX(15px) rotate(90deg);
+        }
+        50% {
+            transform: translateY(-60px) translateX(0) rotate(180deg);
+        }
+        75% {
+            transform: translateY(-30px) translateX(-15px) rotate(270deg);
+        }
+        100% {
+            transform: translateY(0) translateX(0) rotate(360deg);
+        }
+    }
+
+    /* MAIN CONTENT */
+    .about-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* HERO SECTION WITH BACKGROUND IMAGE - FIXED */
+    .about-hero {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        margin-top: -80px; /* Remove navbar gap */
+        background: linear-gradient(rgba(5, 5, 16, 0.8), rgba(10, 10, 22, 0.9)), 
+                    url("https://i.pinimg.com/736x/9e/b1/53/9eb1536139a47011d1c32ea1492ada87.jpg") 
+                    no-repeat center center/cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        flex-direction: column;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        padding: 0 20px;
+        z-index: 2;
+        margin-top: 60px; /* Compensate for navbar */
+    }
+
+    .about-hero h1 {
+        font-size: 4.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        letter-spacing: 1.5px;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .about-hero p {
+        font-size: 1.4rem;
+        color: #ccc;
+        max-width: 800px;
+        margin: 0 auto 40px;
+        line-height: 1.7;
+        font-family: 'Rosarivo', serif;
+    }
+
+    /* SECTION STYLING */
+    .section {
+        margin-bottom: 80px;
+        padding-top: 80px;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 50px;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        position: relative;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+        border-radius: 2px;
+    }
+
+    /* TECHNOLOGY CARDS */
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+
+    .tech-card {
+        background: var(--card-bg);
+        padding: 40px 30px;
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--card-border);
+        text-align: center;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        font-family: 'Rosarivo', serif;
+    }
+
+    .tech-card:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    }
+
+    .tech-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+        border-color: rgba(0, 255, 255, 0.3);
+    }
+
+    .tech-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        box-shadow: 0 0 25px var(--neon-blue);
+        transition: all 0.3s ease;
+    }
+
+    .tech-card:hover .tech-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 0 35px var(--neon-blue);
+    }
+
+    .tech-icon svg {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+
+    .tech-card h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #fff;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        font-family: 'Rosarivo', serif;
+    }
+
+    .tech-card p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #ccc;
+        opacity: 0.9;
+        margin-bottom: 20px;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .tech-features {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .tech-features li {
+        padding: 8px 0;
+        color: #aaa;
+        position: relative;
+        padding-left: 25px;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .tech-features li:before {
+        content: '➤';
+        color: var(--neon-green);
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+    }
+
+    /* KEY FEATURES - 6 CARDS */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin-top: 50px;
+    }
+
+    .feature-card {
+        background: var(--card-bg);
+        padding: 35px 25px;
+        border-radius: 20px;
+        text-align: center;
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--card-border);
+        transition: all 0.3s ease;
+        position: relative;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        font-family: 'Rosarivo', serif;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        border-color: rgba(0, 255, 255, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        box-shadow: 0 0 20px var(--neon-green);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px var(--neon-green);
+    }
+
+    .feature-icon svg {
+        width: 35px;
+        height: 35px;
+        color: white;
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: var(--neon-yellow);
+        text-shadow: 0 0 10px rgba(255, 221, 0, 0.3);
+        font-family: 'Rosarivo', serif;
+    }
+
+    .feature-card p {
+        font-size: 1rem;
+        color: #ccc;
+        line-height: 1.6;
+        font-family: 'Rosarivo', serif;
+    }
+ .project-info {
+        background: var(--card-bg);
+        padding: 50px 40px;
+        border-radius: 25px;
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--card-border);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        margin-top: 60px;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .project-info h2 {
+        font-size: 2.2rem;
+        margin-bottom: 30px;
+        color: var(--neon-blue);
+        text-align: center;
+        text-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        font-family: 'Rosarivo', serif;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .info-row {
+        display: contents;
+    }
+
+    .info-item {
+        text-align: center;
+        padding: 30px 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-family: 'Rosarivo', serif;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-item:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+    }
+
+    .info-item:hover {
+        transform: translateY(-8px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(0, 255, 255, 0.3);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .info-value {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--neon-green);
+        margin-bottom: 12px;
+        text-shadow: 0 0 20px rgba(0, 255, 106, 0.6);
+        font-family: 'Rosarivo', serif;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover .info-value {
+        transform: scale(1.1);
+        text-shadow: 0 0 25px rgba(0, 255, 106, 0.8);
+    }
+
+    .info-label {
+        font-size: 1.1rem;
+        color: #ccc;
+        font-weight: 500;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .project-description {
+        font-size: 1.2rem;
+        line-height: 1.7;
+        color: #ccc;
+        text-align: center;
+        max-width: 900px;
+        margin: 0 auto;
+        font-family: 'Rosarivo', serif;
+    }
+
+
+    /* CTA SECTION */
+    .cta-section {
+        text-align: center;
+        padding: 60px 40px;
+        background: linear-gradient(135deg, rgba(10, 10, 35, 0.9), rgba(5, 5, 20, 0.9));
+        border-radius: 30px;
+        margin-top: 80px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--card-border);
+        font-family: 'Rosarivo', serif;
+    }
+
+    .cta-section h2 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .cta-section p {
+        font-size: 1.2rem;
+        color: #ccc;
+        margin-bottom: 30px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .btn-primary {
+        padding: 18px 50px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        color: #fff;
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 1.3rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        border: none;
+        cursor: pointer;
+        letter-spacing: 1px;
+        display: inline-block;
+        font-family: 'Rosarivo', serif;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+    }
+</style>
+
+<!-- ANIMATED BACKGROUND -->
+<div class="animated-bg" id="animatedBackground"></div>
+
+<!-- HERO SECTION WITH BACKGROUND IMAGE - FIXED -->
+<div class="about-hero">
+    <div class="hero-content">
+        <h1>About The Project</h1>
+        <p>Discover the cutting-edge technology behind our revolutionary hand-controlled ball catcher game. Built with modern web technologies and AI-powered computer vision.</p>
+        <a href="/game" class="btn-primary">Experience The Game</a>
+    </div>
+</div>
+
+<div class="about-container">
+    <!-- TECHNOLOGY STACK -->
+    <div class="section">
+        <h2 class="section-title">Technology Stack</h2>
+        
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Flask Framework</h3>
+                <p>Lightweight Python web framework providing robust backend services and API endpoints.</p>
+                <ul class="tech-features">
+                    <li>RESTful API architecture</li>
+                    <li>Real-time video streaming</li>
+                    <li>WebSocket communication</li>
+                    <li>Session management</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2"/>
+                        <path d="M19 4H5C4.44772 4 4 4.44772 4 5V19C4 19.5523 4.44772 20 5 20H19C19.5523 20 20 19.5523 20 19V5C20 4.44772 19.5523 4 19 4Z" stroke="white" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h3>OpenCV</h3>
+                <p>Computer vision library for real-time webcam processing and video feed management.</p>
+                <ul class="tech-features">
+                    <li>Real-time video capture</li>
+                    <li>Image processing pipeline</li>
+                    <li>Frame optimization</li>
+                    <li>Performance optimization</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 11.5V10.5C7 8.84315 8.34315 7.5 10 7.5C11.6569 7.5 13 8.84315 13 10.5V11.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M13 11.5V10.5C13 8.84315 14.3431 7.5 16 7.5C17.6569 7.5 19 8.84315 19 10.5V11.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3>MediaPipe</h3>
+                <p>Google's AI-powered hand tracking solution for precise finger detection and gesture recognition.</p>
+                <ul class="tech-features">
+                    <li>21-point hand landmark detection</li>
+                    <li>Real-time gesture tracking</li>
+                    <li>High accuracy recognition</li>
+                    <li>Cross-platform compatibility</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="2"/>
+                        <path d="M12 6V12L16 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>JavaScript Canvas</h3>
+                <p>HTML5 Canvas API for rendering smooth animations and interactive game elements.</p>
+                <ul class="tech-features">
+                    <li>60fps game rendering</li>
+                    <li>Collision detection</li>
+                    <li>Particle effects</li>
+                    <li>Real-time updates</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 22V12H15V22" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Modern Web Stack</h3>
+                <p>Cutting-edge frontend technologies for seamless user experience and responsive design.</p>
+                <ul class="tech-features">
+                    <li>HTML5 & CSS3</li>
+                    <li>ES6+ JavaScript</li>
+                    <li>Responsive design</li>
+                    <li>Progressive Web App</li>
+                </ul>
+            </div>
+
+            <div class="tech-card">
+                <div class="tech-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H6C4.93913 15 3.92172 15.4214 3.17157 16.1716C2.42143 16.9217 2 17.9391 2 19V21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 11C10.6569 11 12 9.65685 12 8C12 6.34315 10.6569 5 9 5C7.34315 5 6 6.34315 6 8C6 9.65685 7.34315 11 9 11Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>AI Integration</h3>
+                <p>Advanced machine learning models for intelligent hand gesture recognition and tracking.</p>
+                <ul class="tech-features">
+                    <li>Neural network inference</li>
+                    <li>Real-time prediction</li>
+                    <li>Gesture classification</li>
+                    <li>Motion analysis</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- KEY FEATURES - 6 CARDS -->
+    <div class="section">
+        <h2 class="section-title">Key Features</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="2"/>
+                        <path d="M12 6V12L16 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Real-time Processing</h3>
+                <p>60fps hand tracking with minimal latency for seamless gameplay experience.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2"/>
+                        <path d="M19 4H5C4.44772 4 4 4.44772 4 5V19C4 19.5523 4.44772 20 5 20H19C19.5523 20 20 19.5523 20 19V5C20 4.44772 19.5523 4 19 4Z" stroke="white" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h3>Cross-platform</h3>
+                <p>Works seamlessly across all modern browsers and devices with webcam support.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>No Installation</h3>
+                <p>Browser-based solution requiring no downloads or additional software installation.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 12H18L15 21L9 3L6 12H2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Active Gaming</h3>
+                <p>Transform passive screen time into active physical engagement and coordination training.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H6C4.93913 15 3.92172 15.4214 3.17157 16.1716C2.42143 16.9217 2 17.9391 2 19V21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3>Social Competition</h3>
+                <p>Compete with friends worldwide through global leaderboards and achievement systems.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="2"/>
+                        <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" stroke="white" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h3>Progressive Learning</h3>
+                <p>Adaptive difficulty system that scales with your skill level for continuous challenge.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT INFO - UPDATED WITH 6 CARDS -->
+    <div class="project-info">
+        <h2>Project Overview</h2>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-value">6</div>
+                <div class="info-label">Technologies Integrated</div>
+            </div>
+            <div class="info-item">
+                <div class="info-value">60</div>
+                <div class="info-label">FPS Performance</div>
+            </div>
+            <div class="info-item">
+                <div class="info-value">21</div>
+                <div class="info-label">Hand Landmarks</div>
+            </div>
+            <div class="info-item">
+                <div class="info-value">0</div>
+                <div class="info-label">Installation Required</div>
+            </div>
+            <!-- NEW CARDS -->
+            <div class="info-item">
+                <div class="info-value">15</div>
+                <div class="info-label">Max Misses Allowed</div>
+            </div>
+            <div class="info-item">
+                <div class="info-value">8</div>
+                <div class="info-label">Max Balls On Screen</div>
+            </div>
+        </div>
+
+        <p class="project-description">
+            This innovative project demonstrates the power of modern web technologies combined with artificial intelligence. 
+            By leveraging Flask for backend services, OpenCV for computer vision, MediaPipe for hand tracking, and JavaScript 
+            Canvas for game rendering, we've created a seamless, immersive gaming experience that bridges the gap between 
+            physical movement and digital interaction.
+        </p>
+    </div>
+
+    <!-- CTA SECTION -->
+    <div class="cta-section">
+        <h2>Ready to Experience the Technology?</h2>
+        <p>See how these advanced technologies come together to create an unforgettable gaming experience.</p>
+        <a href="/game" class="btn-primary">Try It Now</a>
+    </div>
+</div>
+
+<script>
+// Create animated background particles
+document.addEventListener('DOMContentLoaded', function() {
+    const bgContainer = document.getElementById('animatedBackground');
+    const particleCount = 20;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('bg-particle');
+        
+        // Random properties
+        const size = Math.random() * 100 + 50;
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const delay = Math.random() * 20;
+        const duration = Math.random() * 15 + 20;
+        
+        // Apply properties
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.top = `${posY}%`;
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+        
+        // Random color
+        const colors = ['var(--neon-blue)', 'var(--neon-pink)', 'var(--neon-purple)', 'var(--neon-green)'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.background = `radial-gradient(circle, ${randomColor} 0%, transparent 70%)`;
+        
+        bgContainer.appendChild(particle);
+    }
+});
+</script>
+
+{% endblock %}

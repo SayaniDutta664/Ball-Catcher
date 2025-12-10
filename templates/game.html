@@ -1,0 +1,797 @@
+{% extends "base.html" %}
+{% block title %}Play Game - Hand Controlled Ball Catcher{% endblock %}
+
+{% block content %}
+
+<style>
+   
+    /* MODERN CYBERPUNK STYLING */
+    :root {
+        --neon-blue: #0ff;
+        --neon-pink: #ff0080;
+        --neon-green: #00ff6a;
+        --neon-purple: #b300ff;
+        --neon-orange: #ff6a00;
+        --dark-bg: #0a0a16;
+        --darker-bg: #050510;
+        --card-bg: rgba(15, 15, 35, 0.9);
+        --card-border: rgba(255, 255, 255, 0.15);
+    }
+    
+    body {
+     
+        background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+        color: #fff;
+        font-family: 'Rosarivo', serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .game-wrapper {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    /* HEADER STYLING */
+    .game-header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+        padding-top: 20px;
+    }
+    
+    .game-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+        margin-bottom: 15px;
+        letter-spacing: 1.5px;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .game-title:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 10%;
+        width: 80%;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+    }
+    
+    .game-subtitle {
+        font-size: 1.3rem;
+        color: #ccc;
+        margin-bottom: 20px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+    
+    /* MAIN CONTENT LAYOUT */
+    .main-content {
+        display: flex;
+        flex-direction: row;
+        gap: 40px;
+        margin-bottom: 40px;
+        align-items: stretch;
+    }
+    
+    @media (max-width: 1200px) {
+        .main-content {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+    
+    /* CARD STYLING */
+    .card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--card-border);
+        backdrop-filter: blur(15px);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 650px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+    
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        box-shadow: 0 0 20px var(--neon-blue);
+    }
+    
+    .card-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    /* VIDEO FEED STYLING */
+    .video-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 15px;
+        overflow: hidden;
+        background: #000;
+        position: relative;
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+    }
+    
+    #videoFeed {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    
+    /* GAME AREA STYLING */
+    .game-area {
+        position: relative;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 15px;
+        overflow: hidden;
+        background: #000;
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+    }
+    
+    #gameCanvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: #000;
+    }
+    
+    /* GAME OVER SCREEN */
+    #gameOverScreen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(5, 5, 20, 0.95);
+        border-radius: 15px;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        z-index: 10;
+        padding: 30px;
+    }
+    
+    .game-over-title {
+        font-size: 4rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-orange));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 30px;
+        text-shadow: 0 0 25px rgba(255, 0, 128, 0.6);
+    }
+    
+    .final-stats {
+        font-size: 1.8rem;
+        margin-bottom: 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .stat-value {
+        color: var(--neon-green);
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(0, 255, 106, 0.5);
+    }
+    
+    #restartBtn {
+        margin-top: 20px;
+        padding: 18px 50px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        border: none;
+        border-radius: 50px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+        letter-spacing: 1px;
+    }
+    
+    #restartBtn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 35px rgba(0, 255, 255, 0.8);
+    }
+    
+    /* SCOREBOARD STYLING */
+    .score-container {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        margin: 30px 0;
+    }
+    
+    .score-box {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 20px 40px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--card-border);
+        min-width: 200px;
+        transition: transform 0.3s ease;
+    }
+    
+    .score-box:hover {
+        transform: translateY(-5px);
+    }
+    
+    .score-label {
+        font-size: 1.1rem;
+        color: #aaa;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+    }
+    
+    .score-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--neon-green);
+        text-shadow: 0 0 15px rgba(0, 255, 106, 0.6);
+    }
+    
+    .high-score-value {
+        color: var(--neon-blue);
+        text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+    }
+    
+    /* PROGRESS BAR */
+    .misses-container {
+        margin: 30px 0;
+        text-align: center;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .misses-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .misses-label {
+        font-size: 1.2rem;
+        color: #ccc;
+        font-weight: 600;
+    }
+    
+    .misses-count {
+        font-size: 1.2rem;
+        color: var(--neon-orange);
+        font-weight: 600;
+    }
+    
+    .misses-bar {
+        height: 15px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) inset;
+    }
+    
+    .misses-progress {
+        height: 100%;
+        background: linear-gradient(90deg, var(--neon-green), var(--neon-orange), var(--neon-pink));
+        width: 0%;
+        transition: width 0.5s ease;
+        border-radius: 10px;
+    }
+    
+    /* GAME INFO SECTION */
+    .game-info {
+        display: flex;
+        gap: 40px;
+        margin-top: 40px;
+    }
+    
+    @media (max-width: 900px) {
+        .game-info {
+            flex-direction: column;
+        }
+    }
+    
+    .info-card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 25px;
+        flex: 1;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--card-border);
+        transition: transform 0.3s ease;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .info-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--neon-blue);
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+    
+    .instructions-list {
+        list-style-type: none;
+        padding: 0;
+    }
+    
+    .instructions-list li {
+        margin-bottom: 15px;
+        padding-left: 30px;
+        position: relative;
+        line-height: 1.6;
+    }
+    
+    .instructions-list li:before {
+        content: "➤";
+        color: var(--neon-green);
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .stat-name {
+        font-size: 0.95rem;
+        color: #aaa;
+        margin-bottom: 8px;
+    }
+    
+    .stat-value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--neon-blue);
+    }
+    
+    /* FOOTER */
+    .game-footer {
+        text-align: center;
+        margin-top: 60px;
+        padding-top: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: #888;
+        font-size: 1rem;
+    }
+    
+    /* ANIMATIONS */
+    @keyframes pulse {
+        0% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.4); }
+        50% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.7); }
+        100% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.4); }
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    /* LEVEL UP NOTIFICATION */
+    .level-up {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        padding: 30px 50px;
+        border-radius: 15px;
+        text-align: center;
+        z-index: 100;
+        display: none;
+        border: 2px solid var(--neon-green);
+        box-shadow: 0 0 30px var(--neon-green);
+    }
+    
+    .level-up h2 {
+        font-size: 2.5rem;
+        color: var(--neon-green);
+        margin-bottom: 15px;
+    }
+    
+    .level-up p {
+        font-size: 1.5rem;
+        color: white;
+    }
+</style>
+
+<div class="game-wrapper">
+
+    <!-- HEADER -->
+    <div class="game-header">
+        <h1 class="game-title">HAND-CONTROLLED BALL CATCHER</h1>
+        <p class="game-subtitle">Use your hand movements to control the basket and catch falling balls. Test your reflexes and aim for the highest score!</p>
+    </div>
+
+    <!-- MAIN CONTENT - SIDE BY SIDE -->
+    <div class="main-content">
+        
+        <!-- LEFT: HAND DETECTION -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 11.5V10.5C7 8.84315 8.34315 7.5 10 7.5C11.6569 7.5 13 8.84315 13 10.5V11.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M13 11.5V10.5C13 8.84315 14.3431 7.5 16 7.5C17.6569 7.5 19 8.84315 19 10.5V11.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M19 11.5V12.5C19 15.5376 16.5376 18 13.5 18H12.5C9.46243 18 7 15.5376 7 12.5V11.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M10 7.5V4.5C10 3.11929 11.1193 2 12.5 2C13.8807 2 15 3.11929 15 4.5V7.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M16 7.5V5.5C16 4.11929 17.1193 3 18.5 3C19.8807 3 21 4.11929 21 5.5V7.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Hand Detection</h2>
+            </div>
+            <div class="video-container pulse">
+                <img id="videoFeed" src="/video_feed" width="640" height="480">
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <p style="color: #aaa; font-size: 1rem;">Position your hand in front of the camera to control the basket</p>
+            </div>
+        </div>
+        
+        <!-- RIGHT: GAME -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L14 7H19L15 10L17 15L12 12L7 15L9 10L5 7H10L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Ball Catcher Game</h2>
+            </div>
+            <div class="game-area pulse">
+                <canvas id="gameCanvas" width="640" height="480"></canvas>
+                
+                <div id="gameOverScreen">
+                    <h1 class="game-over-title">GAME OVER</h1>
+                    <div class="final-stats">
+                        <p>Your Score: <span class="stat-value" id="finalScore">0</span></p>
+                        <p>High Score: <span class="stat-value" id="finalHighScore">0</span></p>
+                    </div>
+                    <button id="restartBtn">Play Again</button>
+                </div>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <p style="color: #aaa; font-size: 1rem;">Catch the falling balls to earn points and avoid missing too many!</p>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- SCOREBOARD -->
+    <div class="score-container">
+        <div class="score-box">
+            <div class="score-label">CURRENT SCORE</div>
+            <div class="score-value" id="score">0</div>
+        </div>
+        <div class="score-box">
+            <div class="score-label">HIGH SCORE</div>
+            <div class="score-value high-score-value" id="highScore">0</div>
+        </div>
+    </div>
+    
+    <!-- MISSES PROGRESS BAR -->
+    <div class="misses-container">
+        <div class="misses-header">
+            <div class="misses-label">MISSED BALLS</div>
+            <div class="misses-count" id="missesCount">0/15</div>
+        </div>
+        <div class="misses-bar">
+            <div class="misses-progress" id="missesProgress"></div>
+        </div>
+    </div>
+    
+    <!-- GAME INFO SECTION -->
+    <div class="game-info">
+        <div class="info-card">
+            <h3 class="info-title">How to Play</h3>
+            <ul class="instructions-list">
+                <li>Position yourself so your hand is visible in the camera feed</li>
+                <li>Move your hand horizontally to control the basket position</li>
+                <li>Catch the falling colored balls to earn points</li>
+                <li>Each 10 points increases the game speed and difficulty</li>
+                <li>Avoid missing more than 15 balls or the game ends</li>
+                <li>Try to beat your high score with each playthrough!</li>
+            </ul>
+        </div>
+        
+        <div class="info-card">
+            <h3 class="info-title">Game Stats</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-name">Current Level</span>
+                    <span class="stat-value" id="currentLevel">1</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Balls Speed</span>
+                    <span class="stat-value" id="currentSpeed">3</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Active Balls</span>
+                    <span class="stat-value" id="ballsCount">4</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-name">Total Score</span>
+                    <span class="stat-value" id="totalScore">0</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <h4 style="color: var(--neon-green); margin-bottom: 15px;">Level Progression</h4>
+                <div style="display: flex; align-items: center;">
+                    <div style="flex: 1; height: 10px; background: rgba(255, 255, 255, 0.1); border-radius: 5px; overflow: hidden;">
+                        <div id="levelProgress" style="height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); width: 0%; transition: width 0.5s ease;"></div>
+                    </div>
+                    <div style="margin-left: 15px; color: var(--neon-blue); font-weight: 600;" id="levelProgressText">0/10</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- LEVEL UP NOTIFICATION -->
+    <div class="level-up" id="levelUpNotification">
+        <h2>LEVEL UP!</h2>
+        <p>You've reached Level <span id="newLevel">2</span></p>
+    </div>
+    
+    <!-- FOOTER -->
+    <div class="game-footer">
+        <p>Hand-Controlled Ball Catcher Game | Built with HTML5 Canvas and Hand Detection Technology</p>
+    </div>
+
+</div>
+
+<!-- AUDIO FILES -->
+<audio id="catchSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-bonus-alert-767.mp3"></audio>
+<audio id="missSound" src="https://assets.mixkit.co/sfx/preview/mixkit-losing-drums-2023.mp3"></audio>
+<audio id="levelUpSound" src="https://assets.mixkit.co/sfx/preview/mixkit-video-game-power-up-3164.mp3"></audio>
+<audio id="startSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-video-game-bonus-2044.mp3"></audio>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Sounds
+const catchSound = document.getElementById("catchSound");
+const missSound = document.getElementById("missSound");
+const levelUpSound = document.getElementById("levelUpSound");
+const startSound = document.getElementById("startSound");
+
+// Game state
+let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+document.getElementById("highScore").innerText = highScore;
+
+let ballCount = 4;
+let balls = [];
+let speed = 3;
+let misses = 0;
+const maxMiss = 15;
+let level = 1;
+
+// Neon ball colors
+const ballColors = ["#ff004c", "#00eaff", "#00ff6a", "#ffaa00", "#b300ff", "#fff700"];
+
+// Update stats display
+function updateStats() {
+    document.getElementById("currentLevel").innerText = level;
+    document.getElementById("currentSpeed").innerText = speed;
+    document.getElementById("ballsCount").innerText = ballCount;
+    document.getElementById("missesCount").innerText = `${misses}/${maxMiss}`;
+    document.getElementById("totalScore").innerText = score;
+    
+    // Update progress bar
+    const progressPercent = (misses / maxMiss) * 100;
+    document.getElementById("missesProgress").style.width = `${progressPercent}%`;
+    
+    // Update level progress
+    const levelProgress = score % 10;
+    document.getElementById("levelProgress").style.width = `${(levelProgress / 10) * 100}%`;
+    document.getElementById("levelProgressText").innerText = `${levelProgress}/10`;
+}
+
+function spawnBalls() {
+    for (let i = 0; i < ballCount; i++) {
+        balls.push({
+            x: Math.random() * 600 + 20,
+            y: Math.random() * -500,
+            radius: 18,
+            color: ballColors[Math.floor(Math.random() * ballColors.length)]
+        });
+    }
+}
+spawnBalls();
+startSound.play();
+updateStats();
+
+// Fetch bucket X
+async function getBucketPosition() {
+    const res = await fetch("/bucket_position");
+    return await res.json();
+}
+
+// GAME OVER
+function gameOver() {
+    document.getElementById("finalScore").innerText = score;
+    document.getElementById("finalHighScore").innerText = highScore;
+    document.getElementById("gameOverScreen").style.display = "flex";
+    
+    // Update high score if needed
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
+        document.getElementById("highScore").innerText = highScore;
+    }
+}
+
+document.getElementById("restartBtn").onclick = () => location.reload();
+
+// Show level up notification
+function showLevelUp() {
+    document.getElementById("newLevel").innerText = level;
+    const notification = document.getElementById("levelUpNotification");
+    notification.style.display = "block";
+    
+    setTimeout(() => {
+        notification.style.display = "none";
+    }, 2000);
+}
+
+// Neon Convex Bucket
+function drawConvexBucket(x) {
+    ctx.beginPath();
+    ctx.moveTo(x - 70, 430);
+    ctx.quadraticCurveTo(x, 480, x + 70, 430);
+
+    let grad = ctx.createLinearGradient(x - 70, 430, x + 70, 430);
+    grad.addColorStop(0, "#00eaff");
+    grad.addColorStop(0.5, "#00ff9d");
+    grad.addColorStop(1, "#00eaff");
+
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 8;
+    ctx.shadowColor = "#00eaff";
+    ctx.shadowBlur = 20;
+    ctx.stroke();
+
+    ctx.shadowBlur = 0;
+}
+
+// MAIN LOOP
+async function animate() {
+    const data = await getBucketPosition();
+    const bucketX = data.x;
+
+    ctx.clearRect(0, 0, 640, 480);
+
+    drawConvexBucket(bucketX);
+
+    for (let b of balls) {
+
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.fillStyle = b.color;
+        ctx.shadowColor = b.color;
+        ctx.shadowBlur = 15;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        b.y += speed;
+
+        // Catch
+        if (b.y >= 420 && b.x >= bucketX - 70 && b.x <= bucketX + 70) {
+            score++;
+            document.getElementById("score").innerText = score;
+            catchSound.play();
+
+            b.y = -20;
+            b.x = Math.random() * 600;
+            b.color = ballColors[Math.floor(Math.random() * ballColors.length)];
+
+            // Level up every 10 points
+            if (score % 10 === 0) {
+                speed++;
+                level++;
+                levelUpSound.play();
+                showLevelUp();
+                
+                // Add more balls at higher levels
+                if (level % 3 === 0 && ballCount < 8) {
+                    ballCount++;
+                    balls.push({
+                        x: Math.random() * 600 + 20,
+                        y: Math.random() * -500,
+                        radius: 18,
+                        color: ballColors[Math.floor(Math.random() * ballColors.length)]
+                    });
+                }
+            }
+            
+            updateStats();
+        }
+
+        // Miss
+        if (b.y > 500) {
+            misses++;
+            missSound.play();
+            updateStats();
+
+            b.y = -20;
+            b.x = Math.random() * 600;
+
+            if (misses >= maxMiss) {
+                return gameOver();
+            }
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+animate();
+</script>
+
+{% endblock %}

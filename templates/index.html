@@ -1,0 +1,722 @@
+{% extends "base.html" %}
+{% block title %}Home - Hand Controlled Ball Catcher{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --neon-blue: #0ff;
+        --neon-pink: #ff0080;
+        --neon-green: #00ff6a;
+        --neon-purple: #b300ff;
+        --neon-orange: #ff6a00;
+        --neon-yellow: #ffdd00;
+        --dark-bg: #0a0a16;
+        --darker-bg: #050510;
+        --card-bg: rgba(15, 15, 35, 0.85);
+        --card-border: rgba(255, 255, 255, 0.15);
+    }
+
+    body {
+        font-family: 'Rosarivo', serif;
+        background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    /* ANIMATED BACKGROUND */
+    .animated-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    
+    .bg-particle {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
+        opacity: 0.1;
+        animation: float 20s infinite linear;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(0) translateX(0) rotate(0deg);
+        }
+        25% {
+            transform: translateY(-30px) translateX(15px) rotate(90deg);
+        }
+        50% {
+            transform: translateY(-60px) translateX(0) rotate(180deg);
+        }
+        75% {
+            transform: translateY(-30px) translateX(-15px) rotate(270deg);
+        }
+        100% {
+            transform: translateY(0) translateX(0) rotate(360deg);
+        }
+    }
+
+    /* IMPORTANT FIX */
+    .container {
+        padding: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* ================= HERO SECTION ================= */
+    .hero {
+        width: 100vw;
+        height: 100vh; 
+        margin: 0;
+        padding: 0;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+
+        background: linear-gradient(rgba(5, 5, 16, 0.7), rgba(10, 10, 22, 0.8)), 
+                    url("https://i.pinimg.com/1200x/e9/1a/1f/e91a1fccd32b3775d6311cece1597790.jpg") 
+                    no-repeat center center/cover;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        flex-direction: column;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        padding: 0 20px;
+        z-index: 2;
+    }
+
+    .hero h1 {
+        font-size: 4.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        letter-spacing: 1.5px;
+    }
+
+    .hero p {
+        font-size: 1.4rem;
+        opacity: 0.95;
+        max-width: 600px;
+        margin: 0 auto 40px;
+        line-height: 1.7;
+        color: #ccc;
+        text-shadow: 0 0 12px rgba(0,0,0,0.5);
+    }
+
+    .btn-primary {
+        padding: 18px 50px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        color: #fff;
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 1.3rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        border: none;
+        cursor: pointer;
+        letter-spacing: 1px;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+    }
+
+    /* ================= GENERIC SECTION ================= */
+    .section {
+        padding: 100px 20px;
+        max-width: 1200px;
+        margin: auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 60px;
+        font-weight: 700;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        position: relative;
+    }
+
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-green));
+        border-radius: 2px;
+    }
+
+    /* ================= ENHANCED FEATURE CARDS ================= */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+    }
+
+    .feature-card {
+        background: var(--card-bg);
+        padding: 40px 30px;
+        border-radius: 20px;
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--card-border);
+        text-align: center;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .feature-card:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    }
+
+    .feature-card:hover {
+        transform: translateY(-15px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+        border-color: rgba(0, 255, 255, 0.3);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        box-shadow: 0 0 25px var(--neon-blue);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 0 35px var(--neon-blue);
+    }
+
+    .feature-icon svg {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+
+    .feature-card h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #fff;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .feature-card p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #ccc;
+        opacity: 0.9;
+    }
+
+    /* ================= GAME STATS SECTION ================= */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        margin-top: 50px;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--card-border);
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(0, 255, 255, 0.3);
+    }
+
+    .stat-value {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--neon-green);
+        margin-bottom: 10px;
+        text-shadow: 0 0 15px rgba(0, 255, 106, 0.5);
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        color: #ccc;
+        font-weight: 500;
+    }
+
+    /* ================= HOW IT WORKS ================= */
+    /* ================= HOW IT WORKS - UPDATED FOR 6 CARDS ================= */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 50px;
+}
+
+.step-card {
+    background: var(--card-bg);
+    padding: 35px 25px;
+    border-radius: 20px;
+    text-align: center;
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--card-border);
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+}
+
+.step-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(0, 255, 255, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: white;
+    box-shadow: 0 0 20px var(--neon-green);
+    transition: all 0.3s ease;
+}
+
+.step-card:hover .step-number {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px var(--neon-green);
+}
+
+.step-card h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--neon-yellow);
+    text-shadow: 0 0 10px rgba(255, 221, 0, 0.3);
+}
+
+.step-card p {
+    font-size: 1rem;
+    color: #ccc;
+    line-height: 1.6;
+}
+    /* ================= WHY PLAY SECTION ================= */
+    /* ================= WHY PLAY SECTION - UPDATED FOR 6 CARDS ================= */
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 50px;
+}
+
+.benefit-card {
+    background: var(--card-bg);
+    padding: 35px 25px;
+    border-radius: 20px;
+    text-align: center;
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--card-border);
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.benefit-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--neon-orange), var(--neon-pink));
+}
+
+.benefit-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255, 106, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.benefit-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--neon-orange), var(--neon-pink));
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 0 20px var(--neon-orange);
+    transition: all 0.3s ease;
+}
+
+.benefit-card:hover .benefit-icon {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px var(--neon-orange);
+}
+
+.benefit-icon svg {
+    width: 35px;
+    height: 35px;
+    color: white;
+}
+
+.benefit-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--neon-orange);
+    text-shadow: 0 0 10px rgba(255, 106, 0, 0.3);
+}
+
+.benefit-card p {
+    font-size: 1rem;
+    color: #ccc;
+    line-height: 1.6;
+}
+    /* ================= CTA SECTION ================= */
+    .cta-section {
+        text-align: center;
+        padding: 80px 20px;
+        background: linear-gradient(135deg, rgba(10, 10, 35, 0.9), rgba(5, 5, 20, 0.9));
+        border-radius: 30px;
+        margin: 50px auto;
+        max-width: 1000px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--card-border);
+    }
+
+    .cta-section h2 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .cta-section p {
+        font-size: 1.2rem;
+        color: #ccc;
+        margin-bottom: 30px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<!-- ANIMATED BACKGROUND -->
+<div class="animated-bg" id="animatedBackground"></div>
+
+<!-- ================= HERO SECTION ================= -->
+<div class="hero">
+    <div class="hero-content">
+        <h1>Hand Controlled Ball Catcher</h1>
+        <p>Experience the future of gaming with AI-powered hand tracking. Control the game with natural hand movements and immerse yourself in a cyberpunk adventure.</p>
+        <a href="/game" class="btn-primary">Start Playing Now</a>
+    </div>
+</div>
+
+<!-- ================= ENHANCED FEATURES ================= -->
+<div class="section">
+    <h2 class="section-title">Game Features</h2>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 11.5V10.5C7 8.84315 8.34315 7.5 10 7.5C11.6569 7.5 13 8.84315 13 10.5V11.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M13 11.5V10.5C13 8.84315 14.3431 7.5 16 7.5C17.6569 7.5 19 8.84315 19 10.5V11.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M19 11.5V12.5C19 15.5376 16.5376 18 13.5 18H12.5C9.46243 18 7 15.5376 7 12.5V11.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h3>AI Hand Tracking</h3>
+            <p>Advanced computer vision tracks your hand movements in real-time with pixel-perfect precision for immersive gameplay.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="2"/>
+                    <path d="M12 6V12L16 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h3>Progressive Difficulty</h3>
+            <p>Intelligent scaling system increases speed and complexity as you master each level, keeping the challenge perfect.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 18V12C3 9.61305 3.94821 7.32387 5.63604 5.63604C7.32387 3.94821 9.61305 3 12 3C14.3869 3 16.6761 3.94821 18.364 5.63604C20.0518 7.32387 21 9.61305 21 12V18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21 19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h3>Immersive Audio</h3>
+            <p>Crystal-clear sound effects and dynamic audio feedback enhance every catch, miss, and level progression.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h3>Smart Scoring</h3>
+            <p>Advanced scoring system with persistent high scores and detailed performance analytics to track your progress.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2"/>
+                    <path d="M19 4H5C4.44772 4 4 4.44772 4 5V19C4 19.5523 4.44772 20 5 20H19C19.5523 20 20 19.5523 20 19V5C20 4.44772 19.5523 4 19 4Z" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+            <h3>Real-time Feedback</h3>
+            <p>Instant visual and audio feedback for every action, creating a responsive and engaging gaming experience.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H6C4.93913 15 3.92172 15.4214 3.17157 16.1716C2.42143 16.9217 2 17.9391 2 19V21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 11C10.6569 11 12 9.65685 12 8C12 6.34315 10.6569 5 9 5C7.34315 5 6 6.34315 6 8C6 9.65685 7.34315 11 9 11Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h3>Global Leaderboard</h3>
+            <p>Compete with players worldwide and track your ranking with our integrated global leaderboard system.</p>
+        </div>
+    </div>
+
+    <!-- GAME STATS -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-value">15</div>
+            <div class="stat-label">Maximum Misses</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">10</div>
+            <div class="stat-label">Points Per Level</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">8</div>
+            <div class="stat-label">Max Balls</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">∞</div>
+            <div class="stat-label">Score Potential</div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= HOW IT WORKS ================= -->
+<div class="section">
+    <h2 class="section-title">How It Works</h2>
+
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Position Your Hand</h3>
+            <p>Stand 3-5 feet from your camera with good lighting and ensure your hand is clearly visible in the frame.</p>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Form the Bucket</h3>
+            <p>Use your thumb and index finger to create a virtual catching bucket that the AI will track in real-time.</p>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Track & Catch</h3>
+            <p>Move your hand horizontally to follow the falling balls and position your bucket to catch them.</p>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">4</div>
+            <h3>Level Up</h3>
+            <p>Score points, avoid misses, and progress through increasingly challenging levels with higher speeds.</p>
+        </div>
+
+        <!-- NEW CARDS -->
+        <div class="step-card">
+            <div class="step-number">5</div>
+            <h3>Master Timing</h3>
+            <p>Learn to anticipate ball trajectories and perfect your timing for maximum catching efficiency.</p>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">6</div>
+            <h3>Beat High Scores</h3>
+            <p>Compete against yourself and others by achieving new personal bests and climbing the leaderboard.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ================= WHY PLAY SECTION ================= -->
+<div class="section">
+    <h2 class="section-title">Why Players Love It</h2>
+
+    <div class="benefits-grid">
+        <div class="benefit-card">
+            <div class="benefit-icon">
+                <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 12H18L15 21L9 3L6 12H2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h3>Active Gaming</h3>
+            <p>Transform passive screen time into active physical engagement that improves reflexes and coordination.</p>
+        </div>
+
+        <div class="benefit-card">
+            <div class="benefit-icon">
+                <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="2"/>
+                    <path d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+            <h3>Intuitive Controls</h3>
+            <p>No complex buttons or learning curve - just natural hand movements that anyone can master instantly.</p>
+        </div>
+
+        <div class="benefit-card">
+            <div class="benefit-icon">
+                <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h3>Innovative Experience</h3>
+            <p>Break away from traditional gaming with cutting-edge hand tracking technology that feels like magic.</p>
+        </div>
+
+        <div class="benefit-card">
+            <div class="benefit-icon">
+                <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" stroke-width="2"/>
+                    <path d="M12 6V12L16 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h3>Progressive Challenge</h3>
+            <p>Smart difficulty scaling keeps the game engaging as you improve, always providing the perfect level of challenge.</p>
+        </div>
+
+        <div class="benefit-card">
+            <div class="benefit-icon">
+                <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H6C4.93913 15 3.92172 15.4214 3.17157 16.1716C2.42143 16.9217 2 17.9391 2 19V21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 11C10.6569 11 12 9.65685 12 8C12 6.34315 10.6569 5 9 5C7.34315 5 6 6.34315 6 8C6 9.65685 7.34315 11 9 11Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h3>Social Competition</h3>
+            <p>Compete with friends and players worldwide through global leaderboards and share your achievements.</p>
+        </div>
+
+        <!-- NEW CARD -->
+        <div class="benefit-card">
+            <div class="benefit-icon">
+                <svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" stroke-width="2"/>
+                    <path d="M19 4H5C4.44772 4 4 4.44772 4 5V19C4 19.5523 4.44772 20 5 20H19C19.5523 20 20 19.5523 20 19V5C20 4.44772 19.5523 4 19 4Z" stroke="white" stroke-width="2"/>
+                </svg>
+            </div>
+            <h3>Instant Accessibility</h3>
+            <p>No downloads or installations required - just open your browser and start playing immediately from any device.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ================= CTA SECTION ================= -->
+<div class="cta-section">
+    <h2>Ready to Experience the Future of Gaming?</h2>
+    <p>Join thousands of players who have already discovered the thrill of hand-controlled gameplay. No downloads, no installations - just pure gaming magic.</p>
+    <a href="/game" class="btn-primary">Start Your Adventure Now</a>
+</div>
+
+<script>
+// Create animated background particles
+document.addEventListener('DOMContentLoaded', function() {
+    const bgContainer = document.getElementById('animatedBackground');
+    const particleCount = 25;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('bg-particle');
+        
+        // Random properties
+        const size = Math.random() * 120 + 30;
+        const posX = Math.random() * 100;
+        const posY = Math.random() * 100;
+        const delay = Math.random() * 20;
+        const duration = Math.random() * 15 + 20;
+        
+        // Apply properties
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.left = `${posX}%`;
+        particle.style.top = `${posY}%`;
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+        
+        // Random color
+        const colors = ['var(--neon-blue)', 'var(--neon-pink)', 'var(--neon-purple)', 'var(--neon-green)'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        particle.style.background = `radial-gradient(circle, ${randomColor} 0%, transparent 70%)`;
+        
+        bgContainer.appendChild(particle);
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Contact Us | BallCatcher{% endblock %}
+
+{% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rosarivo:ital@0;1&display=swap');
+
+/* -------- GLOBAL TYPOGRAPHY -------- */
+* {
+  font-family: "Rosarivo", serif !important;
+}
+
+/* -------- BACKGROUND -------- */
+/* -------- LAYOUT + OUTER NEON BORDER -------- */
+.contact-wrapper {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 1250px;
+  width: 100%;
+  padding: 45px;
+  border-radius: 35px;
+
+  /* Neon border */
+  border: 3px solid rgba(0, 255, 255, 0.6);
+  box-shadow: 
+      0 0 18px rgba(0, 255, 255, 0.7),
+      0 0 35px rgba(138, 43, 226, 0.8),
+      inset 0 0 25px rgba(0, 255, 255, 0.35),
+      inset 0 0 45px rgba(255, 0, 255, 0.3);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  transition: 0.4s ease;
+}
+
+.contact-wrapper:hover {
+  box-shadow: 
+      0 0 30px rgba(0, 255, 255, 0.9),
+      0 0 55px rgba(255, 0, 255, 0.9),
+      inset 0 0 60px rgba(0, 255, 255, 0.5),
+      inset 0 0 80px rgba(255, 0, 255, 0.45);
+  transform: translateY(-6px);
+}
+/* -------- TITLE -------- */
+.contact-title {
+  font-size: 4rem;
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 50px;
+  background: linear-gradient(90deg, #31d0ff, #7a5cf5, #ff3df5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glowTitle 2s infinite alternate ease-in-out;
+}
+@keyframes glowTitle {
+  from { text-shadow: 0 0 20px #7a5cf5; }
+  to { text-shadow: 0 0 40px #31d0ff; }
+}
+
+/* -------- LAYOUT -------- */
+.contact-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  align-items: stretch;
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* -------- GLOWING BOXES -------- */
+.contact-box, .map-box {
+  flex: 1 1 430px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid rgba(0, 234, 255, 0.6);
+  border-radius: 20px;
+  padding: 40px 35px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(0, 234, 255, 0.4), inset 0 0 20px rgba(0, 234, 255, 0.25);
+  transition: 0.4s;
+}
+.contact-box:hover, .map-box:hover {
+  box-shadow: 0 0 40px rgba(255, 0, 255, 0.6), inset 0 0 32px rgba(0, 200, 255, 0.45);
+  transform: translateY(-6px);
+}
+
+/* -------- HEADINGS -------- */
+.contact-box h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  background: linear-gradient(90deg, #31d0ff, #7a5cf5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 12px rgba(0, 234, 255, 0.7);
+}
+.contact-box p {
+  color: #dbeafe;
+  font-size: 1.05rem;
+  margin-bottom: 30px;
+}
+
+/* -------- FORM -------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+input, textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(0, 234, 255, 0.25);
+  background: rgba(255, 255, 255, 0.07);
+  color: white;
+  font-size: 1.1rem;
+  transition: 0.3s;
+  outline: none;
+}
+input:focus, textarea:focus {
+  border-color: #00eaff;
+  box-shadow: 0 0 15px rgba(0, 234, 255, 0.5);
+}
+
+/* -------- GLOWING BUTTON -------- */
+.btn-send {
+  padding: 15px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #00eaff, #7a5cf5, #ff26d0);
+  box-shadow: 0 0 35px rgba(0, 234, 255, 0.5);
+  transition: 0.3s;
+}
+.btn-send:hover {
+  background: linear-gradient(90deg, #ff26d0, #7a5cf5, #00eaff);
+  box-shadow: 0 0 55px rgba(255, 0, 255, 0.7);
+  transform: scale(1.05);
+}
+
+/* -------- MAP -------- */
+.map-box iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 455px;
+  border-radius: 15px;
+  border: none;
+}
+
+/* -------- RESPONSIVE -------- */
+@media (max-width: 900px) {
+  .contact-title { font-size: 2.8rem; }
+  .contact-wrapper { flex-direction: column; }
+}
+</style>
+
+
+<section class="contact-section">
+  <div class="container">
+    <h1 class="contact-title">Get in Touch</h1>
+
+    <div class="contact-wrapper">
+      <!-- CONTACT BOX -->
+      <div class="contact-box">
+        <h2>Contact Us</h2>
+        <p>We’d love to hear from you! Send us a message below.</p>
+        <form action="#" method="POST">
+          <input type="text" name="name" placeholder="Your Name" required>
+          <input type="email" name="email" placeholder="Your Email" required>
+          <textarea name="message" placeholder="Your Message" required></textarea>
+          <button type="submit" class="btn-send">Send Message</button>
+        </form>
+      </div>
+
+        <!-- MAP BOX -->
+      <div class="map-box">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3679.113003369496!2d88.47508331496923!3d22.574408585180727!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f89db04cf68f13%3A0x9347e9b62052d4de!2sNewtown%2C%20Kolkata%2C%20West%20Bengal!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+          allowfullscreen="" loading="lazy">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
